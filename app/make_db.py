@@ -1,4 +1,3 @@
-cat << 'EOF' > app/make_db.py
 import sqlite3
 from werkzeug.security import generate_password_hash as g
 c = sqlite3.connect('smartcampus.db')
@@ -7,4 +6,3 @@ c.execute('create table grades(student_id integer, course text, marks int)')
 c.execute('insert into users values(1, ?, ?)', ('ali', g('pass123')))
 c.executemany('insert into grades values(?,?,?)', [(1,'SSDD',88),(2,'DB',71)])
 c.commit()
-EOF
