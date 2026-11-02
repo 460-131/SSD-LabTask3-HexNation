@@ -1,0 +1,69 @@
+rules:
+  - id: hardcoded-secret
+    languages: [python]
+    message: Hard-coded secret in source. Read it from an environment variable.
+    severity: ERROR
+    patterns:
+      - pattern-either:
+          - pattern: $KEY = "..."
+          - pattern: $KEY = '...'
+      - metavariable-regex:
+          metavariable: $KEY
+          regex: (?i).*(SECRET|PASSWORD|TOKEN|KEY).*
+
+  - id: weak-hash-md5
+    languages: [python]
+    message: MD5 is too weak for passwords. Use generate_password_hash or bcrypt.
+    severity: ERROR
+    pattern: hashlib.md5(...)
+
+  - id: sql-string-formatting
+    languages: [python]
+    message: SQL injection risk. Use parameterized queries.
+    severity: ERROR
+    patterns:
+      - pattern-either:
+          - pattern: $DB.execute(f"... {$VAR} ...")
+          - pattern: $DB.execute("..." % ...)
+
+  - id: command-injection-shell
+    languages: [python]
+    message: Command injection risk. Do not use shell=True.
+    severity: ERROR
+    pattern: subprocess.check_output(..., shell=True)
+
+  - id: flask-debug-true
+    languages: [python]
+    message: Debug mode should be disabled in production.
+    severity: WARNING
+    pattern: app.run(..., debug=True)
+
+  - id: requests-verify-false
+    languages: [python]
+    message: TLS verification disabled. Set verify=True.
+    severity: WARNING
+    pattern: requests.get(..., verify=False)
+
+  - id: path-traversal-send-file
+    languages: [python]
+    message: Potential path traversal. Use send_from_directory.
+    severity: WARNING
+    pattern: send_file("..." + ...)
+
+  - id: xss-template-injection
+    languages: [python]
+    message: Template injection / XSS. Do not concatenate user input into templates.
+    severity: ERROR
+    pattern: render_template_string("..." + ...)
+
+  - id: unsafe-eval
+    languages: [python]
+    message: Code execution risk. Avoid eval().
+    severity: ERROR
+    pattern: eval(...)
+
+  - id: unsafe-pickle
+    languages: [python]
+    message: Insecure deserialization. Avoid pickle.loads on untrusted data.
+    severity: ERROR
+    pattern: pickle.loads(...)
